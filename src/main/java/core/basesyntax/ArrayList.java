@@ -5,64 +5,33 @@ import java.util.Objects;
 
 public class ArrayList<T> implements List<T> {
     private static final int ARRAY_SIZE = 10;
+    //    private static final int
     private Object[] data;
-    private int index;
+    private int sizeArray;
 
     public ArrayList() {
         this.data = new Object[ARRAY_SIZE];
-        index = 0;
+        sizeArray = 0;
     }
 
     @Override
     public void add(T value) {
-        if (index == data.length - 1) {
-            Object[] tempArray = new Object[(int) (data.length * 1.5)];
-            for (int i = 0; i < data.length; i++) {
-                tempArray[i] = data[i];
-            }
-            data = tempArray;
-        }
-        data[index] = value;
-        index++;
+        increaseArray();
+
+        data[sizeArray] = value;
+        sizeArray++;
     }
 
     @Override
     public void add(T value, int index) {
-        if (index > this.index || index < 0) {
-            throw new ArrayListIndexOutOfBoundsException("Index didn`t value");
-        }
+        checkIndex(index);
 
-        Object[] tempArray = new Object[data.length];
-        int tempIndex = 0;
+        increaseArray();
 
-        if (this.index == 0) {
-            this.index++;
-            data[0] = value;
-        } else if (this.index == index) {
-            data[index] = value;
-            this.index++;
-        } else {
-            for (int i = 0; i < this.index; i++) {
-                if (this.index == tempArray.length) {
-                    Object[] tempArray2 = new Object[(int) (data.length * 1.5)];
-                    tempArray = new Object[tempArray2.length];
-                    for (int j = 0; j < data.length; j++) {
-                        tempArray2[j] = data[j];
-                    }
-                    data = tempArray2;
-                }
+        System.arraycopy(data, index, data, index + 1, sizeArray - index);
 
-                if (index == i) {
-                    tempArray[tempIndex] = value;
-                    tempIndex++;
-                }
-                tempArray[tempIndex] = data[i];
-                tempIndex++;
-            }
-
-            data = tempArray;
-            this.index = tempIndex;
-        }
+        data[index] = value;
+        sizeArray++;
     }
 
     @Override
@@ -74,38 +43,30 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public T get(int index) {
-        if (index >= this.index || index < 0) {
-            throw new ArrayListIndexOutOfBoundsException("Invalid value");
+        if (index >= sizeArray || index < 0) {
+            throw new ArrayListIndexOutOfBoundsException("Invalid index " + index);
         }
         return (T) data[index];
     }
 
     @Override
     public void set(T value, int index) {
-        if (index >= this.index || index < 0) {
-            throw new ArrayListIndexOutOfBoundsException("Invalid value");
+        if (index >= sizeArray || index < 0) {
+            throw new ArrayListIndexOutOfBoundsException("Invalid index " + index);
         }
         data[index] = value;
     }
 
     @Override
     public T remove(int index) {
-        if (index < 0 || index >= this.index) {
+        if (index < 0 || index >= sizeArray) {
             throw new ArrayListIndexOutOfBoundsException("");
         }
         final T temp = get(index);
 
-        Object[] tempArray = new Object[data.length];
-        int tempIndex = 0;
+        System.arraycopy(data, index + 1, data, index, sizeArray - index);
 
-        for (int i = 0; i < data.length; i++) {
-            if (i != index) {
-                tempArray[tempIndex] = data[i];
-                tempIndex++;
-            }
-        }
-        data = tempArray;
-        this.index--;
+        sizeArray--;
         return temp;
     }
 
@@ -114,7 +75,7 @@ public class ArrayList<T> implements List<T> {
         Object temp = new Object();
         boolean find = false;
 
-        for (int i = 0; i < index + 1; i++) {
+        for (int i = 0; i < sizeArray + 1; i++) {
             if (Objects.equals(data[i], element)) {
                 temp = data[i];
                 remove(i);
@@ -130,14 +91,28 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int size() {
-        return index;
+        return sizeArray;
     }
 
     @Override
     public boolean isEmpty() {
-        if (index == 0) {
+        if (sizeArray == 0) {
             return true;
         }
         return false;
+    }
+
+    private void increaseArray() {
+        if (sizeArray == data.length - 1) {
+            Object[] tempArray = new Object[(int) (data.length * 1.5)];
+            System.arraycopy(data, 0, tempArray, 0, data.length);
+            data = tempArray;
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index > sizeArray || index < 0) {
+            throw new ArrayListIndexOutOfBoundsException("Invalid index " + index);
+        }
     }
 }
