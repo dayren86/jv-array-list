@@ -1,11 +1,10 @@
 package core.basesyntax;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class ArrayList<T> implements List<T> {
     private static final int ARRAY_SIZE = 10;
-    //    private static final int
+    private static final double ARRAY_GROW = 1.5;
     private Object[] data;
     private int sizeArray;
 
@@ -60,7 +59,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(int index) {
         if (index < 0 || index >= sizeArray) {
-            throw new ArrayListIndexOutOfBoundsException("");
+            throw new ArrayListIndexOutOfBoundsException("Invalid index " + index);
         }
         final T temp = get(index);
 
@@ -76,7 +75,7 @@ public class ArrayList<T> implements List<T> {
         boolean find = false;
 
         for (int i = 0; i < sizeArray + 1; i++) {
-            if (Objects.equals(data[i], element)) {
+            if ((data[i] == element) || (data[i] != null && data[i].equals(element))) {
                 temp = data[i];
                 remove(i);
                 find = true;
@@ -84,7 +83,7 @@ public class ArrayList<T> implements List<T> {
             }
         }
         if (!find) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Element not find");
         }
         return (T) temp;
     }
@@ -104,7 +103,7 @@ public class ArrayList<T> implements List<T> {
 
     private void increaseArray() {
         if (sizeArray == data.length - 1) {
-            Object[] tempArray = new Object[(int) (data.length * 1.5)];
+            Object[] tempArray = new Object[(int) (data.length * ARRAY_GROW)];
             System.arraycopy(data, 0, tempArray, 0, data.length);
             data = tempArray;
         }
